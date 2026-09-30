@@ -1,0 +1,1093 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>*{box-sizing:border-box}[hidden]{display:none!important}html,body{margin:0}body{font-family:system-ui,sans-serif}</style></head><body>
+<title>Коллекторы онлайн</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Unbounded:wght@500;700;800&display=swap">
+<style>
+
+/* Layout: a tabletop seen from above — the A4 field in the middle, four agencies seated left and right, the replay deck and capital race below. One deliberate look (evening tabletop), not theme-switched. */
+:root{
+  --table:#243029; --table-2:#2c3a32; --felt-line:rgba(255,255,255,.06);
+  --paper:#f3efe6; --card:#fbf8f2; --ink:#1b1a17; --ink-2:#5e5a52; --rule:#d6d0c3;
+  --fresh:#2a5fa8; --mid:#e0a030; --old:#2e2723; --event:#a8231b; --bank:#a8231b;
+  --p0:#1a8a7c; --p1:#9a3f78; --p2:#c0632a; --p3:#7b8a2c;
+  --d-call:#6a4c93; --d-law:#2e2723; --d-field:#e0a030; --d-anal:#2f7d4f;
+  --on-table:#e9e4d8; --on-table-2:#a9b3aa;
+  --f-display:"Unbounded","Arial Black",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+html,body{background:var(--table);color:var(--on-table)}
+body{font-family:var(--f-body);font-size:14px;line-height:1.45;padding-inline:16px;padding-block:18px 40px;
+  background:
+    radial-gradient(ellipse at 50% 35%, var(--table-2), var(--table) 70%);
+  min-height:100%;}
+.wrap{max-width:1320px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+h1{font-family:var(--f-display);font-weight:800;font-size:clamp(20px,2.4vw,28px);letter-spacing:.02em;margin:0;text-wrap:balance}
+.sub{color:var(--on-table-2);margin:2px 0 0;font-size:13px}
+header.top{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:flex-end;justify-content:space-between}
+
+/* controls */
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+button{font:600 13px var(--f-body);border-radius:8px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);
+  color:var(--on-table);padding:7px 12px;cursor:pointer}
+button:hover{background:rgba(255,255,255,.12)}
+button:focus-visible,.rchip:focus-visible,input:focus-visible{outline:2px solid var(--mid);outline-offset:2px}
+button.primary{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+button.primary:hover{background:#fff}
+button[aria-pressed="true"]{background:var(--mid);color:var(--ink);border-color:var(--mid)}
+.stepno{font:500 12px var(--f-mono);color:var(--on-table-2);min-width:92px;text-align:right;font-variant-numeric:tabular-nums}
+.rounds{display:flex;gap:4px;flex-wrap:wrap}
+.bar{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}
+.mnav{display:none;gap:6px;margin-left:auto}
+.ticker{font-size:13.5px;color:var(--paper);min-width:0}
+.ticker b{font:700 12px var(--f-mono);color:var(--mid);margin-right:6px}
+.phases{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.phases div{border-radius:6px;padding:6px 4px;text-align:center;font:600 10.5px var(--f-body);color:var(--ink-2);background:#ebe6db}
+.phases div b{display:block;font:700 9px var(--f-mono);color:#9c9588}
+.phases div.on{background:var(--ink);color:var(--paper)}
+.phases div.on b{color:var(--mid)}
+.field{align-self:start}
+.rchip{font:700 12px var(--f-mono);width:30px;height:28px;border-radius:6px;border:1px solid rgba(255,255,255,.16);
+  background:transparent;color:var(--on-table-2);padding:0;cursor:pointer}
+.rchip.done{color:var(--on-table)}
+.rchip.on{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+label.tog{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--on-table-2);cursor:pointer}
+
+/* table */
+.table{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,440px) minmax(0,1fr);grid-template-areas:"p0 field p1" "p3 field p2";gap:14px;align-items:stretch}
+.seat{min-width:0;border-radius:14px;padding:12px;background:rgba(0,0,0,.18);border:1px solid var(--felt-line);display:flex;flex-direction:column;gap:10px;transition:box-shadow .25s, background .25s}
+.seat.act{box-shadow:0 0 0 2px var(--pc), 0 10px 30px rgba(0,0,0,.35);background:rgba(0,0,0,.28)}
+.seat.win{box-shadow:0 0 0 3px var(--mid), 0 0 40px rgba(224,160,48,.35)}
+.who{display:flex;gap:10px;align-items:center}
+.who svg{flex:0 0 auto;width:58px;height:58px}
+.who .nm{min-width:0}
+.who .agency{font-family:var(--f-display);font-weight:700;font-size:14px;letter-spacing:.02em}
+.who .person{font-size:12px;color:var(--on-table-2)}
+.cash{margin-left:auto;text-align:right}
+.cash .v{font:700 22px var(--f-mono);font-variant-numeric:tabular-nums;color:var(--paper)}
+.cash .v small{font-size:12px;color:var(--on-table-2);font-weight:500}
+.cash .delta{font:600 12px var(--f-mono);min-height:16px}
+.delta.up{color:#8fd19e}.delta.down{color:#f0a08f}
+.notes{display:flex;justify-content:flex-end;gap:2px;margin-top:4px;height:14px}
+.note{width:9px;height:14px;border-radius:2px;border:1px solid rgba(0,0,0,.25)}
+
+.planshet{background:var(--paper);color:var(--ink);border-radius:10px;padding:8px 8px 10px;display:flex;flex-direction:column;gap:8px}
+.plan-h{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.plan-h b{font:700 10px var(--f-display);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+.depts{display:flex;gap:5px}
+.tok{width:24px;height:24px;border-radius:50%;border:1.5px dashed #9c9588;display:grid;place-items:center;font:700 8px var(--f-display);color:transparent}
+.tok.on{border:2px solid rgba(255,255,255,.7);color:#fff;box-shadow:0 1px 3px rgba(0,0,0,.35)}
+.tok.new{animation:pop .6s ease-out}
+@keyframes pop{0%{transform:scale(.3)}70%{transform:scale(1.25)}100%{transform:scale(1)}}
+.slots{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;align-items:start}
+.slot{min-height:104px;border-radius:7px;border:1.5px dashed #c9c2b3;position:relative;display:flex;flex-direction:column}
+.slot.locked{background:repeating-linear-gradient(135deg,#e6e0d3 0 6px,#efeae0 6px 12px);border-style:solid;border-color:#ddd6c8;display:grid;place-items:center;
+  font:600 9px var(--f-body);color:#9c9588;text-align:center;padding:4px}
+
+/* portfolio mini card */
+.pc{background:var(--card);border:1.5px solid var(--ink);border-radius:7px;overflow:hidden;position:relative;z-index:2;box-shadow:0 1px 0 rgba(0,0,0,.1)}
+.pc .hd{font:700 8.5px var(--f-display);letter-spacing:.04em;color:#fff;padding:3px 5px}
+.pc.F .hd{background:var(--fresh)} .pc.M .hd{background:var(--mid);color:var(--ink)} .pc.O .hd{background:var(--old)}
+.pc .nom{font:800 19px var(--f-display);padding:3px 5px 0;line-height:1}
+.pc .nom small{font:600 9px var(--f-body);margin-left:2px}
+.pips{display:flex;gap:3px;padding:4px 5px 5px}
+.pip{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--ink)}
+.pip.f{background:var(--ink)}
+.pc .paid{font:500 9px var(--f-mono);color:var(--ink-2);padding:0 5px 4px}
+.under{position:relative;height:0}
+.sliver{position:absolute;left:4px;right:4px;height:10px;border-radius:0 0 5px 5px;background:#fff;border:1px solid var(--ink);border-top:none}
+.pay{position:absolute;top:-7px;right:-5px;z-index:4;background:var(--ink);color:var(--paper);font:700 10px var(--f-mono);border-radius:9px;padding:1px 6px;white-space:nowrap}
+.pay.zero{background:#8f877a}
+.played{margin-top:4px;font:500 9.5px var(--f-mono);color:var(--ink-2);text-align:center;line-height:1.2}
+.pc.closed{opacity:.45;filter:grayscale(.6)}
+.closedtag{position:absolute;inset:auto 0 30% 0;z-index:5;text-align:center;font:700 9px var(--f-display);letter-spacing:.08em;color:var(--event);transform:rotate(-12deg)}
+.pc.newlot{animation:drop .5s ease-out}
+@keyframes drop{from{transform:translateY(-14px);opacity:0}to{transform:none;opacity:1}}
+
+/* hand */
+.hand{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.hand .lbl{font:600 11px var(--f-body);color:var(--on-table-2);margin-right:4px}
+.cc{width:44px;border-radius:5px;background:var(--card);color:var(--ink);border:1.5px solid var(--ink);overflow:hidden;font:600 9px var(--f-mono)}
+.cc .h{background:var(--ink);color:var(--paper);font:700 8px var(--f-display);padding:2px 4px;display:flex;justify-content:space-between}
+.cc .r{display:flex;justify-content:space-between;align-items:center;padding:1px 4px}
+.cc .r i{width:6px;height:6px;border-radius:1px;display:inline-block}
+.cc.back{height:52px;background:var(--fresh);border-color:#173a6c;display:grid;place-items:center;color:#cfe0f5;font:700 13px var(--f-display)}
+
+/* field */
+.field{grid-area:field;background:var(--paper);color:var(--ink);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:12px;box-shadow:0 20px 50px rgba(0,0,0,.4);min-width:0}
+.field .brand{display:flex;justify-content:space-between;align-items:baseline}
+.field .brand b{font:800 18px var(--f-display);letter-spacing:.03em}
+.field .brand span{font:500 10px var(--f-mono);color:var(--ink-2)}
+.track{display:grid;grid-template-columns:repeat(10,1fr);gap:3px}
+.track div{height:28px;border:1.5px solid var(--ink);border-radius:5px;display:grid;place-items:center;font:700 11px var(--f-mono);position:relative;background:var(--card)}
+.track div.bankzone{border-color:var(--bank);color:var(--bank)}
+.track div.past{background:#e7e1d5;color:#9c9588;border-color:#bdb5a6}
+.track div.cur{background:var(--ink);color:var(--paper)}
+.fieldrow{display:grid;grid-template-columns:118px minmax(0,1fr);gap:10px}
+.evcard{background:var(--card);border:1.5px solid var(--ink);border-radius:8px;overflow:hidden;min-height:132px}
+.evcard .hd{background:var(--event);color:#fff;font:700 9px var(--f-display);letter-spacing:.06em;padding:4px 6px}
+.evcard .t{font:800 12px var(--f-display);padding:6px 6px 2px;line-height:1.15}
+.evcard .x{font-size:10.5px;color:var(--ink-2);padding:2px 6px 6px;line-height:1.3}
+.decks{display:flex;gap:6px;flex-wrap:wrap}
+.deck{flex:1 1 0;min-width:64px;border-radius:7px;padding:6px;color:#fff;font:700 8.5px var(--f-display);letter-spacing:.05em;text-align:center;box-shadow:2px 2px 0 rgba(0,0,0,.25),4px 4px 0 rgba(0,0,0,.12)}
+.deck small{display:block;font:500 9px var(--f-body);opacity:.85;letter-spacing:0;margin-top:2px}
+.deck.p{background:var(--old)} .deck.c{background:var(--fresh)} .deck.e{background:var(--event)}
+.bankslot{border:1.5px solid var(--bank);border-radius:8px;padding:6px 8px;display:flex;justify-content:space-between;align-items:center;gap:6px;color:var(--bank);background:#fbeeea}
+.bankslot b{font:800 13px var(--f-display)}
+.bankslot span{font:600 11px var(--f-mono)}
+.bankslot.off{opacity:.45;background:transparent}
+.bankslot.sold{background:var(--bank);color:#fff}
+.lotsh{display:flex;justify-content:space-between;align-items:baseline}
+.lotsh b{font:700 10px var(--f-display);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+.lotsh span{font:500 10.5px var(--f-body);color:var(--ink-2)}
+.lots{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.lot{position:relative;min-height:112px}
+.lot .back{height:100%;min-height:104px;border-radius:7px;background:var(--old);border:1.5px solid var(--ink);display:grid;place-items:center;color:#e9e4d8;font:800 14px var(--f-display)}
+.lot.cur .pc,.lot.cur .back{box-shadow:0 0 0 3px var(--mid)}
+.lot .res{margin-top:4px;font:600 9.5px var(--f-body);text-align:center;line-height:1.2}
+.lot .res .chip{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:3px;vertical-align:0}
+.blitz{font:600 9px var(--f-mono);color:var(--event);padding:0 5px 4px}
+.lot.gone .pc{opacity:.35}
+.empty{font-size:11px;color:var(--ink-2);grid-column:1/-1;padding:18px 0;text-align:center;border:1.5px dashed var(--rule);border-radius:8px}
+
+/* story + chart */
+.lower{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:14px}
+.panel{background:rgba(0,0,0,.2);border:1px solid var(--felt-line);border-radius:14px;padding:14px;min-width:0}
+.panel h2{font:700 11px var(--f-display);letter-spacing:.14em;text-transform:uppercase;color:var(--on-table-2);margin:0 0 8px}
+.now{font-size:15.5px;line-height:1.5;color:var(--paper);min-height:70px;max-width:68ch}
+.now b{color:#fff}
+.hist{position:relative;margin-top:10px;display:flex;flex-direction:column;gap:3px;max-height:190px;overflow:auto;font-size:12.5px;color:var(--on-table-2)}
+.hist div{padding:3px 8px;border-radius:6px;cursor:pointer}
+.hist div:hover{background:rgba(255,255,255,.05)}
+.hist div.on{background:rgba(255,255,255,.1);color:var(--paper)}
+.chart svg{width:100%;height:auto;display:block}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--on-table-2);margin-top:6px}
+.legend i{display:inline-block;width:14px;height:3px;border-radius:2px;vertical-align:3px;margin-right:5px}
+.rules{font-size:12.5px;color:var(--on-table-2);line-height:1.5}
+.rules b{color:var(--on-table)}
+
+@media (max-width:1100px){
+  .table{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"field field" "p0 p1" "p3 p2"}
+  .lower{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:680px){
+  .mnav{display:flex} .evcard{min-height:0}
+  .bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--table);padding-block:8px;margin-inline:-16px;padding-inline:16px;border-bottom:1px solid var(--felt-line)}
+  .table{grid-template-columns:minmax(0,1fr);grid-template-areas:"field" "p0" "p1" "p2" "p3"}
+  .fieldrow{grid-template-columns:minmax(0,1fr)}
+  .lots{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .stepno{text-align:left}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* game additions */
+.table{grid-template-areas:"b1 center b2" "me center b3"}
+.center{grid-area:center;display:flex;flex-direction:column;gap:12px;min-width:0;align-self:start}
+.field{align-self:auto}
+.act-panel{background:var(--paper);color:var(--ink);border-radius:12px;padding:14px;box-shadow:0 0 0 3px var(--mid),0 16px 40px rgba(0,0,0,.4);display:flex;flex-direction:column;gap:10px}
+.act-panel.wait{box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.act-panel h3{font:800 14px var(--f-display);margin:0;letter-spacing:.02em}
+.act-panel p{margin:0;font-size:13px;color:var(--ink-2)}
+.act-panel p b{color:var(--ink)}
+.act-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.act-panel button{background:#fff;color:var(--ink);border:1.5px solid var(--ink)}
+.act-panel button:hover{background:#f1ece2}
+.act-panel button.go{background:var(--ink);color:var(--paper)}
+.act-panel button.go:hover{background:#000}
+.act-panel button.bl{border-color:var(--event);color:var(--event)}
+.act-panel button:disabled{opacity:.4;cursor:not-allowed}
+.stepper{display:flex;align-items:center;border:1.5px solid var(--ink);border-radius:8px;overflow:hidden;background:#fff}
+.stepper button{border:none;border-radius:0;padding:7px 10px;background:#f1ece2}
+.stepper input{width:74px;border:none;text-align:center;font:700 16px var(--f-mono);color:var(--ink);background:#fff;padding:6px 2px}
+.hint{font-size:12px;color:var(--ink-2);background:#ebe6db;border-radius:8px;padding:8px 10px;line-height:1.45}
+.hint b{color:var(--ink)}
+.result{border-radius:8px;padding:8px 10px;background:#fff;border:1.5px solid var(--rule);font-size:13px}
+.seat.me{box-shadow:0 0 0 2px var(--p0)}
+.slot.pick{cursor:pointer}
+.slot.pick:hover .pc{box-shadow:0 0 0 3px var(--mid)}
+.cc.sel{box-shadow:0 0 0 3px var(--mid);transform:translateY(-3px)}
+.cc.pickable{cursor:pointer}
+.cc.used{opacity:.3}
+.assign{margin-top:14px;display:flex;flex-direction:column;align-items:center;gap:2px}
+.assign .cc{width:40px}
+.assign .pv{font:700 10px var(--f-mono);background:var(--ink);color:var(--paper);border-radius:8px;padding:1px 6px}
+.assign .pv.blind{background:#8f877a}
+.pot{position:absolute;top:-8px;left:50%;transform:translateX(-50%);z-index:6;font:700 10px var(--f-mono);background:var(--mid);color:var(--ink);border-radius:8px;padding:1px 6px;white-space:nowrap}
+.log{max-height:260px;overflow:auto;display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--on-table-2);position:relative}
+.log .r{font:700 11px var(--f-display);letter-spacing:.1em;color:var(--mid);margin-top:6px}
+.log .l b{color:var(--paper)}
+.settings{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;font-size:13px;color:var(--on-table-2)}
+.settings select{font:600 13px var(--f-body);background:rgba(255,255,255,.06);color:var(--on-table);border:1px solid rgba(255,255,255,.18);border-radius:8px;padding:6px 8px}
+.settings select option{color:#000}
+.final{display:flex;flex-direction:column;gap:6px}
+.final .row{display:flex;justify-content:space-between;gap:10px;font:600 14px var(--f-body);padding:6px 10px;border-radius:8px;background:#fff}
+.final .row.w{background:var(--mid)}
+@media (max-width:1100px){ .table{grid-template-areas:"center center" "me b1" "b2 b3"} }
+@media (max-width:680px){ .table{grid-template-areas:"center" "me" "b1" "b2" "b3"} .rounds{display:none} .field .brand span{display:none} }
+
+.lobby{display:flex;flex-direction:column;gap:12px}
+.lobby .box{border:1.5px solid var(--rule);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;background:#fff}
+.lobby .box h4{margin:0;font:700 11px var(--f-display);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
+.gamerow{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:6px 0;border-top:1px solid var(--rule)}
+.gamerow:first-of-type{border-top:none}
+.code{font:800 18px var(--f-mono);letter-spacing:.12em}
+.seg{display:inline-flex;border:1.5px solid var(--ink);border-radius:8px;overflow:hidden}
+.seg button{border:none!important;border-radius:0!important;background:#fff}
+.seg button[aria-pressed="true"]{background:var(--ink)!important;color:var(--paper)!important}
+.mute{font-size:12px;color:var(--ink-2)}
+.seat.hidden{display:none}
+.badge{display:inline-block;font:700 9px var(--f-display);letter-spacing:.08em;padding:2px 6px;border-radius:6px;background:rgba(255,255,255,.12);color:var(--on-table);margin-left:6px;vertical-align:2px}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Коллекторы · онлайн</h1>
+      <p class="sub" id="sub">Сыграйте с товарищами через интернет или одни с ботами. Правила v18: отделы за наборы, премия 5 млн, торги по очереди со старта, с 7-го раунда — Банк за 60 млн.</p>
+    </div>
+    <div class="settings" id="settings">
+      <label for="diff" class="hostonly">Боты</label>
+      <select id="diff" class="hostonly"><option value="calm">осторожные</option><option value="hard">азартные</option></select>
+      <label for="speed" class="hostonly">Скорость</label>
+      <select id="speed" class="hostonly"><option value="1.6">медленно</option><option value="1" selected>обычно</option><option value="0.35">быстро</option></select>
+      <button id="bLobby">К списку столов</button>
+    </div>
+  </header>
+  <div class="bar"><nav class="rounds" id="rounds" aria-label="Раунды"></nav><div class="ticker" id="ticker" aria-live="polite"></div></div>
+
+  <section class="table" id="table">
+    <div class="center"><div class="field" id="field"></div><div class="act-panel" id="act"></div></div>
+  </section>
+
+  <section class="lower">
+    <div class="panel">
+      <h2>Ход партии</h2>
+      <div class="log" id="log"></div>
+    </div>
+    <div class="panel chart">
+      <h2>Гонка капитала, млн</h2>
+      <div id="chart"></div>
+      <div class="legend" id="legend"></div>
+      <p class="rules" style="margin:10px 0 0"><b>Раунд:</b> событие → торги (лоты по одному; ставки по кругу со старта шагом 0,1, кто спасовал — выходит; блиц — купить сразу) → сбор (под каждый портфель карта из руки, 0,5 млн за карту; без карты — вслепую из колоды) → расходы и отделы. <b>Отделы:</b> 3 свежих — колл-центр (+5 млн), 3 средних — выездная (+5), 3 старых — юротдел (+5), свежий+средний+старый — аналитики. Портфель живёт 4 сбора. С 7-го раунда у кого 60 млн — может выкупить Банк и победить; иначе после 10-го раунда побеждает самый богатый.</p>
+    </div>
+  </section>
+</div>
+
+<script>
+/* Связь через наш сервер: тот же интерфейс, что у PeerJS (Peer / connect / on('data')),
+   но сообщения идут через сервер игры (поток /events и запросы /send), поэтому работают в любой сети. */
+(function(){
+  if(!/^https?:$/.test(location.protocol)) return;   // открыт как файл — сервера нет
+  const BASE="";
+  class Em{ constructor(){ this.h={}; } on(e,f){ (this.h[e]=this.h[e]||[]).push(f); return this; } emit(e,...a){ (this.h[e]||[]).slice().forEach(f=>{ try{ f(...a); }catch(err){ console.error(err); } }); } }
+  const rid=()=>"g"+Math.random().toString(36).slice(2,12)+Date.now().toString(36);
+  async function post(body){
+    const r=await fetch(BASE+"/send",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+    return r;
+  }
+  class Conn extends Em{
+    constructor(peer,remote){ super(); this._p=peer; this.peer=remote; this.open=false; this._q=Promise.resolve(); }
+    send(data){
+      const body={from:this._p.id,room:this._p._room(this.peer),to:this.peer,type:"data",data};
+      this._q=this._q.then(()=>post(body).then(r=>{ if(r.status===404||r.status===410){ this._drop(); } }).catch(()=>{}));
+    }
+    close(){ if(!this.open) return; this.open=false; post({from:this._p.id,room:this._p._room(this.peer),type:"bye"}).catch(()=>{}); this.emit("close"); }
+    _drop(){ if(this.open){ this.open=false; this.emit("close"); } }
+  }
+  class Peer extends Em{
+    constructor(id){
+      super(); this.isHost=!!id; this.id=id||rid(); this.conns={}; this.hostRoom=null; this.disconnected=false; this.destroyed=false;
+      const q=new URLSearchParams({cid:this.id,role:this.isHost?"host":"guest"}); if(this.isHost) q.set("room",this.id);
+      this.es=new EventSource(BASE+"/events?"+q.toString());
+      let opened=false;
+      this.es.addEventListener("ready",()=>{ this.disconnected=false; if(!opened){ opened=true; this.emit("open",this.id); } else this.emit("reconnected"); });
+      this.es.addEventListener("taken",()=>{ this.es.close(); this.emit("error",{type:"unavailable-id"}); });
+      this.es.onmessage=e=>{ let m; try{ m=JSON.parse(e.data); }catch(err){ return; } this._msg(m); };
+      this.es.onerror=()=>{ if(this.destroyed) return; this.disconnected=true; if(!opened&&this.es.readyState===2) this.emit("error",{type:"network"}); };
+    }
+    _room(remote){ return this.isHost?this.id:(this.hostRoom||remote); }
+    _msg(m){
+      if(m.type==="conn"&&this.isHost){ const old=this.conns[m.from]; if(old) old._drop(); const c=new Conn(this,m.from); this.conns[m.from]=c; this.emit("connection",c); setTimeout(()=>{ c.open=true; c.emit("open"); },0); }
+      else if(m.type==="data"){ const c=this.conns[m.from]; if(c) c.emit("data",m.data); }
+      else if(m.type==="close"){ const c=this.conns[m.from]; if(c) c._drop(); }
+    }
+    connect(hostId){
+      this.hostRoom=hostId; const c=new Conn(this,hostId); this.conns[hostId]=c;
+      post({from:this.id,room:hostId,type:"hello"}).then(r=>{
+        if(r.ok){ c.open=true; c.emit("open"); }
+        else if(r.status===404) this.emit("error",{type:"peer-unavailable"});
+        else if(r.status===409) setTimeout(()=>this.connect(hostId),800);
+        else this.emit("error",{type:"server-error"});
+      }).catch(()=>this.emit("error",{type:"network"}));
+      return c;
+    }
+    reconnect(){}
+    destroy(){ this.destroyed=true; Object.values(this.conns).forEach(c=>{ try{ c.close(); }catch(e){} }); try{ this.es.close(); }catch(e){} }
+  }
+  window.Peer=Peer;
+})();
+</script>
+<script>
+/* ================= data ================= */
+const CARDS=[[14,2,0],[12,2,0],[12,2,1],[10,4,1],[8,8,1],[6,8,2],[6,6,2],[4,2,4],[4,4,4],[4,2,5]];
+const PORT=[["F",15,0.8,2.8],["F",25,1.3,6],["F",35,1.8,9.2],["M",30,0.9,2.8],["M",50,1.5,6],["M",70,2.1,9.2],["O",60,0.6,2.8],["O",100,1.0,6],["O",150,1.5,10]];
+const EVENTS=["spad","rost","cb","fssp","volna","sale","calm","calm","blind","sealed"];
+const TI={F:0,M:1,O:2}, UP={F:1.28,M:1.37,O:1.4}, ALPHA=0.85;
+const DV={call:2.0,field:1.5,law:1.0,anal:1.0}, PREM={call:5,field:5,law:5,anal:0};
+const ACH={call:"F",field:"M",law:"O",anal:"mix"}, DORDER=["call","law","field","anal"];
+const PL=[
+  {agency:"«Кондор»", bot:"Анна, бот", hex:"#1a8a7c", hair:0, skin:"#e8c4a4"},
+  {agency:"«Бастион»", bot:"Борис, бот", hex:"#9a3f78", hair:1, skin:"#d9a882"},
+  {agency:"«Меридиан»", bot:"Вика, бот", hex:"#c0632a", hair:2, skin:"#f0d0b4"},
+  {agency:"«Ястреб»", bot:"Гена, бот", hex:"#7b8a2c", hair:3, skin:"#c99673"},
+];
+const TN={F:"Свежий",M:"Средний",O:"Старый"}, TN2={F:"свежий",M:"средний",O:"старый"};
+const EV={
+  spad:["Спад","Все значения сбора −2 п.п., но не ниже 0."],
+  rost:["Рост зарплат","Все значения сбора +2 п.п."],
+  cb:["Ставка ЦБ выросла","Плата за каждую карту сбора — 1 млн вместо 0,5."],
+  fssp:["Проверка ФССП","У кого больше всех портфелей — платит 2 млн."],
+  volna:["Волна банкротств физлиц","Старые портфели ничего не приносят."],
+  sale:["Распродажа банка","На торги выходит 5-й лот."],
+  calm:["Спокойный квартал","Без эффекта."],
+  blind:["Кот в мешке","Лоты идут рубашкой вверх со старта 0,5 млн, блиц не действует."],
+  sealed:["Тайные ставки","Все пишут ставку втайне, побеждает наибольшая и платит свою. Блиц не действует."],
+};
+const DEPT={
+  call:{n:"Колл-центр №2",s:"№2",c:"var(--d-call)",why:"три свежих",fx:"место 4, рука +1, +2 п.п. свежим"},
+  law:{n:"Юротдел",s:"ЮР",c:"var(--d-law)",why:"три старых",fx:"+2 п.п. к сбору старых"},
+  field:{n:"Выездная группа",s:"ВЫЕЗ",c:"var(--d-field)",why:"три средних",fx:"+3 п.п. к сбору средних"},
+  anal:{n:"Аналитики",s:"АН",c:"var(--d-anal)",why:"свежий, средний и старый",fx:"рука +1 карта"},
+};
+const f1=v=>{const r=Math.round(v*10)/10; return r.toLocaleString("ru-RU",{minimumFractionDigits:(Math.round(Math.abs(r)*10)%10?1:0),maximumFractionDigits:1});};
+const r1=v=>Math.round(v*10)/10;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ================= session ================= */
+let MODE="lobby";          // lobby | solo | host | guest
+let MY=0, CODE=null, G=null;
+let names={};
+function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+function localId(){ let v=lsGet("koll_pid"); if(!v){ v="p_"+Math.random().toString(36).slice(2,12); lsSet("koll_pid",v); } return v; }
+const uid=localId();
+let myNick=lsGet("koll_nick")||"";
+function personOf(i){
+  if(!G||!G.seats) return "";
+  const s=G.seats[i]; if(!s) return "";
+  if(s.kind==="bot") return PL[i].bot;
+  if(i===MY) return "Вы";
+  return s.name||`Игрок ${i+1}`;
+}
+function resolveNames(){}
+
+
+/* ================= rng & rules ================= */
+let rng=Math.random;
+function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}}
+const rnd=(a,b)=>a+(b-a)*rng();
+function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;}
+function pct(ci,t,ev,dept){
+  let v=CARDS[ci][TI[t]];
+  if(t==="O"&&dept.includes("law")) v+=2;
+  if(t==="M"&&dept.includes("field")) v+=3;
+  if(t==="F"&&dept.includes("call")) v+=2;
+  if(ev==="spad") v=Math.max(0,v-2); else if(ev==="rost") v+=2;
+  if(ev==="volna"&&t==="O") v=0;
+  return v;
+}
+const meanPct=(t,dept)=>CARDS.reduce((a,_,i)=>a+pct(i,t,"calm",dept),0)/CARDS.length;
+const slots=p=>p.dept.includes("call")?4:3;
+const hsize=p=>3+(p.dept.includes("call")?1:0)+(p.dept.includes("anal")?1:0);
+const fee=()=>G.ev==="cb"?1:0.5;
+function need(types,key){const c={F:0,M:0,O:0}; types.forEach(t=>c[t]++); return key==="mix"?["F","M","O"].filter(t=>!c[t]).length:Math.max(0,3-c[key]);}
+const hasSet=(types,key)=>need(types,key)===0;
+
+/* ================= state ================= */
+function newState(seats,seed){
+  rng=mulberry(seed);
+  const pdeck=[]; PORT.forEach(p=>{for(let k=0;k<4;k++) pdeck.push(p.slice());}); shuffle(pdeck);
+  const cdeck=[]; CARDS.forEach((_,i)=>{for(let k=0;k<6;k++) cdeck.push(i);}); shuffle(cdeck);
+  const n=seats.length;
+  return {seed,seats,pdeck,pdisc:[],cdeck,cdisc:[],events:shuffle(EVENTS.slice()),rnd:0,ev:"calm",first:Math.floor(rng()*n),phase:0,
+    lots:[],curLot:-1,log:[],hist:[seats.map(()=>15)],over:false,winner:null,bank:null,actor:null,auc:null,pending:null,
+    ps:seats.map((s,i)=>({i,human:s.kind==="human",cash:15,ports:[],hand:[],dept:[],newDept:null}))};
+}
+function draw(){ if(!G.cdeck.length){ if(!G.cdisc.length) return null; G.cdeck=shuffle(G.cdisc); G.cdisc=[]; log(`Колода сбора перемешана из сброса.`);} return G.cdeck.pop(); }
+function refill(p){ while(p.hand.length<hsize(p)){ const c=draw(); if(c===null) break; p.hand.push(c);} }
+const nm=p=>`<b style="color:${PL[p].hex}">${PL[p].agency}</b>`;
+function log(html){ G.log.push({r:G.rnd,html}); if(G.log.length>140) G.log.splice(0,G.log.length-140); }
+
+/* ================= bots ================= */
+function target(p){
+  const types=p.ports.map(x=>x.t), opts=DORDER.filter(d=>!p.dept.includes(d));
+  if(!opts.length) return null;
+  return opts.sort((a,b)=>need(types,ACH[a])-need(types,ACH[b])||DV[b]-DV[a])[0];
+}
+function botValue(p,t,nom){
+  const k=Math.min(4,11-G.rnd), fe=fee(), m=meanPct(t,p.dept)*UP[t];
+  const now=p.hand.map(c=>pct(c,t,G.ev,p.dept));
+  let v=((now.length?Math.max(...now):m)*nom/100-fe)+(k-1)*(m*nom/100-0.5);
+  const d=target(p);
+  if(d){
+    const types=p.ports.map(x=>x.t), before=need(types,ACH[d]), after=need(types.concat([t]),ACH[d]);
+    if(after<before) v+=DV[d]*Math.max(0,10-G.rnd)*(after===0?1:0.35)+(after===0?PREM[d]:0);
+    else if(G.rnd<=7&&before<=1&&slots(p)-p.ports.length-1<before) return -1;
+  }
+  return v;
+}
+function botCeiling(p,lot,blind){
+  const [lo,hi]=$("diff").value==="hard"?[0.55,0.9]:[0.35,0.7];
+  let v;
+  if(blind){ const pool=G.pdeck.concat([lot]); v=pool.reduce((a,q)=>a+botValue(p,q[0],q[1]),0)/pool.length; }
+  else v=botValue(p,lot[0],lot[1]);
+  return r1(Math.min(ALPHA*v*rnd(lo,hi),p.cash-1));
+}
+function bestAssign(p,ev){
+  // hand cards must be played while they last; only the rest go blind
+  let best=-1,bestA=null; const n=p.ports.length, h=p.hand.length, maxBlind=Math.max(0,n-h);
+  const rec=(j,used,acc,sum,bl)=>{
+    if(j===n){ if(sum>best){best=sum;bestA=acc.slice();} return; }
+    const pt=p.ports[j];
+    for(let c=0;c<h;c++) if(!used[c]){ used[c]=1; acc.push(c); rec(j+1,used,acc,sum+pct(p.hand[c],pt.t,ev,p.dept)*pt.nom/100,bl); acc.pop(); used[c]=0; }
+    if(bl<maxBlind){ acc.push(-1); rec(j+1,used,acc,sum,bl+1); acc.pop(); }
+  };
+  rec(0,[],[],0,0); return bestA||[];
+}
+
+/* ================= asking players ================= */
+const waiters={};
+let runId=0;
+function ask(seat,kind,data){
+  return new Promise(res=>{
+    const token=Math.random().toString(36).slice(2)+Date.now().toString(36);
+    G.pending={seat,kind,data,token}; waiters[token]=res; CA={sel:null,map:{}};
+    paint();
+  });
+}
+function resolvePending(v){
+  const P=G&&G.pending; if(!P) return; const res=waiters[P.token]; if(!res) return;
+  delete waiters[P.token]; G.pending=null; res(sanitize(P,v));
+}
+function defaultAnswer(P){
+  if(P.kind==="collect") return bestAssign(G.ps[P.seat],G.ev);
+  if(P.kind==="bid") return {pass:true};
+  return null;
+}
+function sanitize(P,v){
+  const p=G.ps[P.seat];
+  if(P.kind==="collect"){
+    const n=p.ports.length, h=p.hand.length, a=Array.isArray(v)?v.slice(0,n).map(x=>Number.isInteger(x)&&x>=0&&x<h?x:-1):[];
+    while(a.length<n) a.push(-1);
+    const seen=new Set(); for(let j=0;j<n;j++){ if(a[j]>=0){ if(seen.has(a[j])) a[j]=-1; else seen.add(a[j]); } }
+    if(seen.size<Math.min(n,h)) return bestAssign(p,G.ev);
+    return a;
+  }
+  if(P.kind==="bid"){
+    if(!v||typeof v!=="object") return {pass:true};
+    if(v.blitz) return {blitz:true};
+    if(typeof v.auto==="number") return {auto:r1(Math.min(p.cash,v.auto))};
+    if(typeof v.bid==="number"){ const b=r1(Math.min(p.cash,v.bid)); return b>=P.data.need?{bid:b}:{pass:true}; }
+    return {pass:true};
+  }
+  if(P.kind==="sealed"){ if(v&&typeof v.v==="number") return {v:r1(Math.min(p.cash,v.v))}; return null; }
+  if(P.kind==="bank"){ if(typeof v==="number") return Math.max(60,Math.min(p.cash,r1(v))); return null; }
+  return null;
+}
+const wait=ms=>new Promise(res=>setTimeout(res,ms*parseFloat($("speed").value)));
+function guard(id){ if(id!==runId) throw new Error("stale"); }
+
+/* ================= engine (solo / host) ================= */
+async function play(){
+  const id=++runId, n=G.ps.length;
+  G.ps.forEach(p=>{for(let k=0;k<3;k++) p.hand.push(draw());});
+  log(`Новая партия на ${n} агентства. У каждого 15 млн и 3 карты сбора. Первым ходит ${nm(G.first)}.`);
+  paint();
+  for(let r=1;r<=10;r++){
+    G.rnd=r; G.ev=G.events[r-1]; G.phase=0; G.lots=[]; G.curLot=-1; G.actor=null;
+    const order=[...Array(n).keys()].map(k=>G.ps[(G.first+k)%n]);
+    log(`<span class="r">Раунд ${r}</span>`);
+    log(`Событие «${EV[G.ev][0]}»: ${EV[G.ev][1]} Первым ходит ${nm(G.first)}.`);
+    paint(); await wait(900); guard(id);
+    if(r>=7){ const done=await bankPhase(order,id); guard(id); if(done) return finish(); }
+    if(r<=8){
+      G.phase=1; const nl=4+(G.ev==="sale"?1:0);
+      for(let k=0;k<nl;k++){
+        if(!G.pdeck.length){ if(G.pdisc.length){ G.pdeck=shuffle(G.pdisc); G.pdisc=[]; } else break; }
+        G.lots.push({lot:G.pdeck.pop(),w:null,price:null,done:false});
+      }
+      for(let k=0;k<G.lots.length;k++){ G.curLot=k; await auction(G.lots[k],order,id); guard(id); }
+      G.curLot=-1;
+    }
+    G.phase=2;
+    for(const p of order){ G.actor=p.i; await collect(p,id); guard(id); }
+    G.actor=null; G.phase=3;
+    const m=Math.max(...G.ps.map(p=>p.ports.length));
+    if(G.ev==="fssp"&&m>0) G.ps.filter(p=>p.ports.length===m).forEach(p=>{p.cash-=2; log(`Проверка ФССП: у ${nm(p.i)} больше всех портфелей — штраф 2 млн.`);});
+    for(const p of order){
+      const types=p.ports.map(x=>x.t);
+      for(const d of ["call","field","law","anal"]){
+        if(!p.dept.includes(d)&&hasSet(types,ACH[d])){ p.dept.push(d); p.cash+=PREM[d]; p.newDept=d;
+          log(`${nm(p.i)} собрал ${DEPT[d].why} — получает <b>${DEPT[d].n}</b> (${DEPT[d].fx})${PREM[d]?`, премия ${PREM[d]} млн`:""}.`); }
+      }
+      refill(p);
+    }
+    G.hist.push(G.ps.map(p=>r1(p.cash)));
+    paint(); await wait(1100); guard(id);
+    G.ps.forEach(p=>p.newDept=null);
+    G.first=(G.first+1)%n;
+  }
+  G.winner=[...G.ps].sort((a,b)=>b.cash-a.cash||b.ports.length-a.ports.length)[0].i;
+  finish();
+}
+function finish(){ G.over=true; G.phase=3; G.pending=null; G.auc=null;
+  log(G.bank?`${nm(G.winner)} выкупил Банк и победил.`:`10 раундов сыграно. Побеждает самый богатый — ${nm(G.winner)}.`);
+  paint(); }
+
+async function bankPhase(order,id){
+  const cands=order.filter(p=>p.cash>=60);
+  if(!cands.length) return false;
+  const ceil={};
+  for(const p of cands){
+    if(p.human){ const v=await ask(p.i,"bank",{cands:cands.map(c=>c.i)}); guard(id); if(v!==null) ceil[p.i]=v; }
+    else ceil[p.i]=p.cash;
+  }
+  const bidders=Object.keys(ceil).map(Number);
+  if(!bidders.length){ log(`Претенденты пока не выкупают Банк.`); return false; }
+  bidders.sort((a,b)=>ceil[b]-ceil[a]||order.findIndex(p=>p.i===a)-order.findIndex(p=>p.i===b));
+  const w=bidders[0], price=bidders.length>1?Math.min(ceil[w],r1(ceil[bidders[1]]+0.1)):60;
+  G.winner=w; G.bank={p:w,price};
+  log(bidders.length>1?`Торги за Банк: ${bidders.map(nm).join(", ")}. ${nm(w)} перебивает и выкупает Банк за <b>${f1(price)} млн</b>.`:`${nm(w)} выкупает Банк за <b>60 млн</b> — мгновенная победа.`);
+  return true;
+}
+
+async function auction(L,order,id){
+  const [t,nom,sp,bl]=L.lot, blind=G.ev==="blind", sealed=G.ev==="sealed";
+  const start=blind?0.5:sp;
+  paint(); await wait(700); guard(id);
+  const elig=order.filter(p=>p.ports.length<slots(p)&&p.cash>=start);
+  const ceil={};
+  elig.forEach(p=>{ if(!p.human) ceil[p.i]=botCeiling(p,L.lot,blind); });
+  let w=null, price=null, how="";
+  L.hist=[];
+  if(sealed){
+    const b={};
+    elig.forEach(p=>{ if(!p.human&&ceil[p.i]>=start) b[p.i]=Math.max(start,r1(0.8*ceil[p.i])); });
+    for(const p of elig.filter(p=>p.human)){ const h=await ask(p.i,"sealed",{start,lot:G.curLot}); guard(id); if(h&&h.v>=start) b[p.i]=h.v; }
+    const bid=Object.keys(b).map(Number).sort((a,c)=>b[c]-b[a]||order.findIndex(p=>p.i===a)-order.findIndex(p=>p.i===c));
+    if(bid.length){ w=bid[0]; price=b[w]; how="sealed"; L.bids=b; L.part=bid; }
+  } else {
+    const inA=new Set(elig.map(p=>p.i)); const auto={};
+    let leader=null, guardN=0;
+    const sync=()=>{ G.auc={lot:G.curLot,start,bl,blind,price,leader,inA:[...inA]}; };
+    sync();
+    outer:
+    while(inA.size && !(leader!==null && inA.size===1) && guardN++<400){
+      // no humans left in the bidding: bots settle at once
+      if(![...inA].some(i=>G.ps[i].human) && ![...inA].some(i=>!blind&&ceil[i]>=bl)){
+        const eff=i=>i===leader&&ceil[i]<(price||0)?price:ceil[i];
+        const needNow=price===null?start:r1(price+0.1);
+        const rest=[...inA].filter(i=>ceil[i]>=needNow||i===leader).sort((a,c)=>eff(c)-eff(a));
+        if(rest.length){ const top=rest[0], sec=rest[1];
+          const np=sec===undefined?(price===null?start:price):Math.max(needNow,Math.min(ceil[top],r1(eff(sec)+0.1)));
+          if(sec!==undefined&&sec!==leader&&r1(np-0.1)>(price||0)) L.hist.push({i:sec,v:r1(np-0.1)});
+          if(top!==leader||np!==price){ price=r1(np); leader=top; L.hist.push({i:top,v:price}); }
+        }
+        [...inA].forEach(i=>{ if(i!==leader){ inA.delete(i); L.hist.push({i,pass:true}); } });
+        break;
+      }
+      let acted=false;
+      for(const P of order){
+        const i=P.i;
+        if(!inA.has(i)||i===leader) continue;
+        if(leader!==null&&inA.size===1) break;
+        const needV=price===null?start:r1(price+0.1), p=G.ps[i];
+        let act;
+        if(p.cash<needV) act={pass:true};
+        else if(p.human){
+          if(auto[i]!=null&&auto[i]>=needV){ act={bid:needV}; G.actor=i; paint(); await wait(250); guard(id); }
+          else { auto[i]=null; act=await ask(i,"bid",{need:needV}); guard(id);
+            if(act&&act.auto!==undefined){ auto[i]=act.auto; act=auto[i]>=needV?{bid:needV}:{pass:true}; } }
+        } else {
+          G.actor=i; paint(); await wait(420); guard(id);
+          const c=ceil[i];
+          if(!blind&&c>=bl&&needV>=bl*0.8) act={blitz:true};
+          else if(c>=needV){ let v=needV; if(c-needV>0.3&&rng()<0.5) v=r1(Math.min(c,needV+0.1+rng()*Math.min(1,(c-needV)/2))); act={bid:v}; }
+          else act={pass:true};
+        }
+        acted=true;
+        if(act.blitz){ w=i; price=bl; how="blitz"; L.hist.push({i,blitz:true}); break outer; }
+        if(act.pass){ inA.delete(i); L.hist.push({i,pass:true}); }
+        else { price=r1(act.bid); leader=i; L.hist.push({i,v:price});
+          if(!blind&&price>=bl){ w=i; price=bl; how="blitz"; break outer; } }
+        sync(); paint();
+      }
+      if(!acted) break;
+    }
+    if(w===null&&leader!==null){ w=leader; how="open"; }
+    G.auc=null; G.actor=null;
+  }
+  L.done=true;
+  const name=blind?"лот рубашкой вверх":`<b>${TN[t]} ${nom}</b>`;
+  if(w===null){ G.pdisc.push(L.lot); log(`Лот ${name} (старт ${f1(start)}): ставок нет — в сброс.`); }
+  else {
+    const p=G.ps[w]; p.cash-=price; p.ports.push({t,nom,n:0,paid:price,cards:[],fresh:true,last:null}); L.w=w; L.price=price; L.how=how;
+    let trail=L.hist.filter(h=>h.v!==undefined).map(h=>`${PL[h.i].agency.replace(/[«»]/g,"")} ${f1(h.v)}`);
+    if(trail.length>5) trail=[trail[0],`… ${trail.length-4} ставок …`,...trail.slice(-3)];
+    let s;
+    if(how==="blitz") s=`${trail.length?`Торги за ${name}: ${trail.join(" → ")}. `:""}${nm(w)} называет блиц и платит <b>${f1(price)} млн</b>${trail.length?"":` за ${name}`}.`;
+    else if(how==="sealed") s=`Тайные ставки за ${name}: ${L.part.map(i=>`${PL[i].agency} ${f1(L.bids[i])}`).join(", ")}. Побеждает ${nm(w)} — платит <b>${f1(price)} млн</b>.`;
+    else if(trail.length===1) s=`${name}: ставку делает только ${nm(w)} — берёт по старту <b>${f1(price)} млн</b>.`;
+    else s=`Торги за ${name}: ${trail.join(" → ")}. Остальные пасуют — ${nm(w)} забирает за <b>${f1(price)} млн</b>.`;
+    if(blind) s+=` Открывает: ${TN[t]} ${nom}.`;
+    log(s);
+  }
+  paint(); await wait(1000); guard(id);
+  G.ps.forEach(p=>p.ports.forEach(x=>x.fresh=false));
+}
+
+async function collect(p,id){
+  if(!p.ports.length){ refill(p); paint(); await wait(250); return; }
+  let assign;
+  if(p.human){ assign=await ask(p.i,"collect",{}); guard(id); }
+  else { paint(); await wait(600); guard(id); assign=bestAssign(p,G.ev); }
+  const fe=fee(), det=[], usedH=new Set();
+  p.ports.forEach((pt,j)=>{
+    let c, blind=false;
+    if(assign[j]!==undefined&&assign[j]>=0){ c=p.hand[assign[j]]; usedH.add(assign[j]); } else { c=draw(); blind=true; }
+    const pc=c===null?0:pct(c,pt.t,G.ev,p.dept), pay=c===null?0:pc*pt.nom/100;
+    p.cash+=pay-fe; pt.n++; if(c!==null) pt.cards.push(c);
+    pt.last={c,pc,pay,blind}; det.push(`${TN2[pt.t]} ${pt.nom} × №${c===null?"—":c+1}${blind?" (вслепую)":""} ${pc}% = ${f1(pay)}`);
+  });
+  p.hand=p.hand.filter((_,k)=>!usedH.has(k));
+  const gross=p.ports.reduce((a,x)=>a+x.last.pay,0), tf=fe*p.ports.length;
+  log(`${nm(p.i)} собирает: ${det.join("; ")}. За карты ${f1(tf)}. Итог ${gross-tf>=0?"+":"−"}${f1(Math.abs(gross-tf))} млн.`);
+  G.actor=p.i; paint(); await wait(1100); guard(id);
+  const keep=[];
+  p.ports.forEach(pt=>{ if(pt.n>=4){ G.cdisc.push(...pt.cards); G.pdisc.push(PORT.find(q=>q[0]===pt.t&&q[1]===pt.nom).slice()); log(`У ${nm(p.i)} закрыт портфель ${TN2[pt.t]} ${pt.nom} (4 сбора).`); } else keep.push(pt); });
+  p.ports=keep; p.ports.forEach(pt=>pt.last=null); refill(p);
+  paint();
+}
+
+/* ================= network: host browser runs the game, others connect peer-to-peer ================= */
+const PREFIX="kollektory-v18-";
+let peer=null, conns=[], hostConn=null, netState="", bcastT=null;
+function maskFor(seat){
+  const S=JSON.parse(JSON.stringify(G));
+  if(S.ps) S.ps.forEach((p,i)=>{ if(i!==seat) p.hand=p.hand.map(()=>-1); });
+  if(S.pdeck) S.pdeck=S.pdeck.map(()=>0);
+  if(S.cdeck) S.cdeck=S.cdeck.map(()=>0);
+  if(S.events) S.events=S.events.map((e,k)=>k<S.rnd?e:"?");
+  if(S.lots&&S.ev==="blind") S.lots.forEach(L=>{ if(!L.done||L.w===null) L.lot=["F",0,0,0]; });
+  return S;
+}
+function broadcast(){
+  if(MODE!=="host") return;
+  clearTimeout(bcastT);
+  bcastT=setTimeout(()=>{ conns.forEach(c=>{ if(c.open&&c.seat!==undefined){ try{ c.send({type:"state",code:CODE,state:maskFor(c.seat)}); }catch(e){} } }); },40);
+}
+let submitted=null, lastTok=null;
+function answer(v){
+  const P=G&&G.pending; if(!P||P.seat!==MY) return;
+  if(MODE==="guest"){
+    if(!hostConn||!hostConn.open){ flash("Нет связи со столом — нажмите «Переподключиться»."); return; }
+    submitted=P.token; hostConn.send({type:"answer",token:P.token,v:(v===undefined?null:v)}); paint();
+  } else resolvePending(v);
+}
+let flashMsg="", flashT=null;
+function flash(m){ flashMsg=m; clearTimeout(flashT); flashT=setTimeout(()=>{flashMsg="";paint();},5000); paint(); }
+function peerOk(){ return typeof window.Peer==="function"; }
+function netErr(e){
+  const t=e&&e.type;
+  if(t==="peer-unavailable") return "Стол с таким кодом не найден: проверьте код и что у создателя страница открыта.";
+  if(t==="network"||t==="server-error"||t==="socket-error"||t==="socket-closed") return "Нет связи с сервером игры. Проверьте интернет и попробуйте ещё раз.";
+  if(t==="browser-incompatible") return "Этот браузер не поддерживает связь с сервером. Откройте игру в Chrome, Edge, Firefox или Safari.";
+  if(t==="unavailable-id") return "Такой код стола уже занят — создайте стол ещё раз.";
+  return "Ошибка соединения"+(t?` (${t})`:"")+". Попробуйте ещё раз.";
+}
+
+/* ================= rendering ================= */
+function avatar(p){
+  const P=PL[p], hairC=["#3b2a20","#1f1a17","#8a4b24","#5a5550"][P.hair];
+  const hair=[
+    `<path d="M17 25c0-10 6-15 13-15s13 5 13 15c-3-5-8-7-13-7s-10 2-13 7z" fill="${hairC}"/>`,
+    `<path d="M18 26c1-9 6-14 12-14s11 5 12 14c-2-4-5-6-12-6s-10 2-12 6z" fill="${hairC}"/><rect x="23" y="27" width="5" height="2" rx="1" fill="#222"/><rect x="32" y="27" width="5" height="2" rx="1" fill="#222"/><path d="M28 28h4" stroke="#222" stroke-width="1"/>`,
+    `<path d="M15 34c-1-15 6-23 15-23s16 8 15 23c-2-8-3-12-4-13-4 2-14 2-22 0-1 1-2 5-4 13z" fill="${hairC}"/><circle cx="30" cy="9" r="5" fill="${hairC}"/>`,
+    `<path d="M19 24c1-8 5-12 11-12s10 4 11 12c-3-3-7-4-11-4s-8 1-11 4z" fill="${hairC}"/><path d="M21 33c2 7 6 9 9 9s7-2 9-9c-2 3-5 4-9 4s-7-1-9-4z" fill="${hairC}"/>`
+  ][P.hair];
+  return `<svg viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="29" fill="rgba(255,255,255,.07)"/>
+    <path d="M8 60c1-12 9-18 22-18s21 6 22 18z" fill="${P.hex}"/><path d="M24 42l6 9 6-9" fill="#f3efe6"/><path d="M29 44l1 9 1-9z" fill="#1b1a17"/>
+    <rect x="26" y="34" width="8" height="8" fill="${P.skin}"/><ellipse cx="30" cy="27" rx="11" ry="12.5" fill="${P.skin}"/>${hair}
+    <circle cx="26" cy="28" r="1.2" fill="#1b1a17"/><circle cx="34" cy="28" r="1.2" fill="#1b1a17"/><path d="M27 33.5q3 2 6 0" stroke="#7a4a3a" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg>`;
+}
+function portCard(t,nom,n,extra="",cls=""){
+  let pips=""; for(let k=0;k<4;k++) pips+=`<span class="pip ${k<n?"f":""}"></span>`;
+  return `<div class="pc ${t} ${cls}"><div class="hd">${TN[t].toUpperCase()}</div><div class="nom">${nom}<small>млн</small></div><div class="pips" title="сборов: ${n} из 4">${pips}</div>${extra}</div>`;
+}
+function slivers(n){ let s=""; for(let k=0;k<n;k++) s+=`<div class="sliver" style="top:${-3+k*4}px"></div>`; return `<div class="under">${s}</div>`; }
+function colCard(ci,cls="",attr=""){
+  const c=CARDS[ci];
+  return `<div class="cc ${cls}" ${attr} title="Карта сбора №${ci+1}: свежий ${c[0]}%, средний ${c[1]}%, старый ${c[2]}%"><div class="h"><span>СБОР</span><span>${ci+1}</span></div>
+   <div class="r"><i style="background:var(--fresh)"></i>${c[0]}%</div><div class="r"><i style="background:var(--mid)"></i>${c[1]}%</div><div class="r"><i style="background:var(--old)"></i>${c[2]}%</div></div>`;
+}
+function notesFor(cash){
+  let v=Math.max(0,cash), out=[]; const den=[[10,"#e9c6c6"],[5,"#c9d8ee"],[1,"#cfe3cc"],[0.5,"#eedcbc"]];
+  for(const [d,c] of den){ while(v>=d-1e-9&&out.length<14){ out.push(c); v-=d; } }
+  return out.map(c=>`<span class="note" style="background:${c}"></span>`).join("");
+}
+
+let CA={sel:null,map:{}};
+const seats=[0,1,2,3].map(p=>{ const el=document.createElement("div"); el.className="seat hidden"; el.style.setProperty("--pc",PL[p].hex); $("table").appendChild(el); return el; });
+let prevCash=[15,15,15,15];
+const myTurn=k=>G&&G.pending&&G.pending.seat===MY&&(!k||G.pending.kind===k)&&submitted!==G.pending.token;
+
+function renderSeat(i){
+  const el=seats[i];
+  if(!G||!G.ps||i>=G.ps.length){ el.className="seat hidden"; return; }
+  const p=G.ps[i], P=PL[i];
+  const areas=["b1","b2","b3"]; let k=0; const map={};
+  for(let s=0;s<G.ps.length;s++){ if(s===MY) map[s]="me"; else map[s]=areas[k++]; }
+  el.style.gridArea=map[i];
+  const collecting=myTurn("collect")&&i===MY;
+  const acting=G.actor===i||(G.pending&&G.pending.seat===i);
+  el.className="seat"+(acting?" act":"")+(G.over&&G.winner===i?" win":"")+(i===MY?" me":"");
+  const d=p.cash-(prevCash[i]??p.cash);
+  let slotHtml="";
+  for(let k2=0;k2<4;k2++){
+    const pt=p.ports[k2];
+    if(k2===3&&!p.dept.includes("call")&&!pt){ slotHtml+=`<div class="slot locked">Место 4<br>колл-центр</div>`; continue; }
+    if(!pt){ slotHtml+=`<div class="slot"></div>`; continue; }
+    let badge="", below="";
+    if(pt.last){ badge=`<span class="pay ${pt.last.pay===0?"zero":""}">+${f1(pt.last.pay)}</span>`; below=`<div class="played">№${pt.last.c===null?"—":pt.last.c+1}${pt.last.blind?" вслепую":""} · ${pt.last.pc}%</div>`; }
+    let pot="", assignHtml="";
+    if(collecting){
+      const hk=CA.map[k2];
+      if(hk!==undefined){ const ci=p.hand[hk], v=pct(ci,pt.t,G.ev,p.dept)*pt.nom/100; assignHtml=`<div class="assign">${colCard(ci)}<span class="pv">+${f1(v)}</span></div>`; }
+      else assignHtml=`<div class="assign"><span class="pv blind">нет карты</span></div>`;
+      if(CA.sel!==null) pot=`<span class="pot">+${f1(pct(p.hand[CA.sel],pt.t,G.ev,p.dept)*pt.nom/100)}</span>`;
+    }
+    slotHtml+=`<div class="slot ${collecting?"pick":""}" style="border:none" ${collecting?`data-port="${k2}" role="button" tabindex="0" aria-label="Портфель ${TN2[pt.t]} ${pt.nom}"`:""}>${badge}${pot}${portCard(pt.t,pt.nom,pt.n,`<div class="paid">куплен ${f1(pt.paid)}</div>`,pt.fresh?"newlot":"")}${slivers(Math.min(pt.n,4))}${below}${assignHtml}</div>`;
+  }
+  const toks=DORDER.map(k3=>{ const on=p.dept.includes(k3);
+    return `<span class="tok ${on?"on":""} ${p.newDept===k3?"new":""}" title="${DEPT[k3].n}: ${DEPT[k3].why} → ${DEPT[k3].fx}${on?" (есть)":""}" style="${on?`background:${DEPT[k3].c}`:""}">${DEPT[k3].s}</span>`; }).join("");
+  let hand;
+  if(i===MY){
+    const used=new Set(Object.values(CA.map));
+    hand=p.hand.map((ci,k4)=>collecting?colCard(ci,`pickable ${CA.sel===k4?"sel":""} ${used.has(k4)?"used":""}`,`data-hand="${k4}" role="button" tabindex="0"`):colCard(ci)).join("")||`<span class="lbl">пусто</span>`;
+  } else hand=p.hand.map(()=>`<div class="cc back">%</div>`).join("")||`<span class="lbl">пусто</span>`;
+  const isBot=G.seats[i].kind==="bot";
+  el.innerHTML=`
+    <div class="who">${avatar(i)}<div class="nm"><div class="agency" style="color:${P.hex}">${P.agency}${i===MY?`<span class="badge">ВЫ</span>`:""}</div><div class="person"></div></div>
+      <div class="cash"><div class="v">${f1(p.cash)} <small>млн</small></div><div class="delta ${d>0.04?"up":d<-0.04?"down":""}">${Math.abs(d)>0.04?(d>0?"+":"−")+f1(Math.abs(d)):"&nbsp;"}</div><div class="notes">${notesFor(p.cash)}</div></div>
+    </div>
+    <div class="planshet"><div class="plan-h"><b>Планшет · портфели</b><span class="depts">${toks}</span></div><div class="slots">${slotHtml}</div></div>
+    <div class="hand"><span class="lbl">${i===MY?"Ваша рука":"Рука"} (${p.hand.length})</span>${hand}</div>`;
+  el.querySelector(".person").textContent=personOf(i);
+}
+
+function renderField(){
+  if(!G||!G.ps){ $("field").innerHTML=`<div class="brand"><b>КОЛЛЕКТОРЫ</b><span>стол пуст</span></div><div class="empty">Создайте стол или сядьте за стол по коду — партия появится здесь.</div>`; return; }
+  const rr=Math.max(1,G.rnd), ev=G.ev, [evT,evX]=EV[ev];
+  let track=""; for(let k=1;k<=10;k++) track+=`<div class="${k>=7?"bankzone":""} ${k<rr?"past":""} ${k===G.rnd?"cur":""}">${k}</div>`;
+  let lotHtml="";
+  if(G.rnd>8) lotHtml=`<div class="empty">После 8-го раунда новых лотов нет — только сбор.</div>`;
+  else if(!G.lots.length) lotHtml=`<div class="empty">Лоты выйдут в фазе торгов.</div>`;
+  else G.lots.forEach((L,k)=>{
+    const cur=k===G.curLot, open=(ev!=="blind"&&(k<=G.curLot||L.done))||(ev==="blind"&&L.done&&L.w!==null);
+    const card=open?portCard(L.lot[0],L.lot[1],0,`<div class="blitz">${ev==="blind"||ev==="sealed"?"":`блиц ${f1(L.lot[3])} · `}старт ${f1(ev==="blind"?0.5:L.lot[2])}</div>`):`<div class="back">${ev==="blind"?"?":"₽"}</div>`;
+    let res="";
+    if(L.done) res=L.w===null?`<div class="res">без ставок</div>`:`<div class="res"><span class="chip" style="background:${PL[L.w].hex}"></span>${PL[L.w].agency.replace(/[«»]/g,"")} · ${f1(L.price)}</div>`;
+    lotHtml+=`<div class="lot ${cur?"cur":""} ${L.done&&!cur?"gone":""}">${card}${res}</div>`;
+  });
+  const bankOn=G.rnd>=7;
+  $("field").innerHTML=`
+    <div class="brand"><b>КОЛЛЕКТОРЫ</b><span>${CODE?`стол ${CODE} · `:""}раунд ${rr} из 10</span></div>
+    <div class="track">${track}</div>
+    <div class="fieldrow">
+      <div class="evcard"><div class="hd">СОБЫТИЕ</div><div class="t">${G.rnd?evT:"—"}</div><div class="x">${G.rnd?evX:"Партия начинается."}</div></div>
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+        <div class="decks"><div class="deck p">ПОРТФЕЛИ<small>${G.pdeck.length} в колоде</small></div><div class="deck c">СБОР<small>${G.cdeck.length} · сброс ${G.cdisc.length}</small></div><div class="deck e">СОБЫТИЯ<small>${10-G.rnd} осталось</small></div></div>
+        <div class="bankslot ${bankOn?"":"off"} ${G.bank?"sold":""}"><b>БАНК</b><span>${G.bank?`выкуплен · ${PL[G.bank.p].agency}`:bankOn?"60 млн наличными":"с 7-го раунда"}</span></div>
+      </div>
+    </div>
+    <div class="phases">${["Событие","Торги","Сбор","Расходы"].map((t,k)=>`<div class="${k===G.phase?"on":""}"><b>${k+1}</b>${t}</div>`).join("")}</div>
+    <div class="lotsh"><b>Торги</b><span>${G.lots.length?G.lots.length+" лот"+(G.lots.length>4?"ов":"а"):""}</span></div>
+    <div class="lots">${lotHtml}</div>`;
+}
+
+function expValue(t,nom){ const p=G.ps[MY], k=Math.min(4,11-G.rnd); return k*(meanPct(t,p.dept)*nom/100-0.5); }
+function stepper(val){ return `<div class="stepper"><button data-d="-1" aria-label="Меньше на 1">−1</button><button data-d="-0.1" aria-label="Меньше на 0,1">−0,1</button><input id="bidv" inputmode="decimal" value="${f1(val)}" aria-label="Сумма, млн"><button data-d="0.1" aria-label="Больше на 0,1">+0,1</button><button data-d="1" aria-label="Больше на 1">+1</button></div>`; }
+function readBid(){ const v=parseFloat(String($("bidv").value).replace(",",".")); return isNaN(v)?0:r1(v); }
+function wireStepper(A,min,max){ A.querySelectorAll(".stepper button").forEach(b=>b.onclick=()=>{ $("bidv").value=f1(Math.max(min,Math.min(max,readBid()+parseFloat(b.dataset.d)))); }); }
+function aucBoard(){
+  const Au=G.auc; if(!Au) return "";
+  const L=G.lots[Au.lot]; const H=(L&&L.hist||[]).slice(-9);
+  const chips=H.map(h=>`<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:12px;background:${h.pass?"#ebe6db":"#fff"};border:1.5px solid ${PL[h.i].hex};font:600 12px var(--f-mono);${h.pass?"color:#9c9588;text-decoration:line-through":""}">${PL[h.i].agency.replace(/[«»]/g,"")} ${h.pass?"пас":h.blitz?"блиц":f1(h.v)}</span>`).join(" ");
+  const who=Au.inA.map(i=>`<span style="color:${PL[i].hex};font-weight:700">${PL[i].agency.replace(/[«»]/g,"")}</span>`).join(", ");
+  return `<div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap"><span style="font:800 24px var(--f-mono)">${Au.price===null?"—":f1(Au.price)+" млн"}</span><span style="font-size:12px;color:var(--ink-2)">старт ${f1(Au.start)}${Au.blind?"":` · блиц ${f1(Au.bl)}`} · в торгах: ${who||"никого"}</span></div>
+    <div style="display:flex;flex-wrap:wrap;gap:5px">${chips||'<span style="font-size:12px;color:var(--ink-2)">ставок ещё нет</span>'}</div>`;
+}
+
+let lobbySeats=4, lobbyErr="";
+function inviteLink(code){ return /^https?:/.test(location.protocol)?`${location.origin}${location.pathname}?stol=${code}`:""; }
+function renderLobby(A){
+  A.className="act-panel";
+  const pre=(new URLSearchParams(location.search).get("stol")||"").toUpperCase().slice(0,4);
+  A.innerHTML=`<h3>Столы</h3>
+  <div class="lobby">
+    ${peerOk()?"":`<div class="hint" style="background:#fbeeea;color:var(--event)"><b style="color:var(--event)">Сетевая игра недоступна.</b> Игра открыта не с сервера (например, как файл). Откройте её по адресу вашего сервера — тогда можно играть по сети. Одному с ботами можно и так.</div>`}
+    <div class="box"><h4>Ваше имя за столом</h4><div class="act-row"><input id="nick" maxlength="20" value="${esc(myNick)}" placeholder="например, Саша" style="flex:1;min-width:0;font:600 14px var(--f-body);border:1.5px solid var(--ink);border-radius:8px;padding:7px 10px;background:#fff;color:var(--ink)"><span class="mute">видно соперникам</span></div></div>
+    <div class="box"><h4>Создать стол</h4>
+      <p>Вы создаёте стол и получаете код из 4 букв. Товарищи открывают эту же игру у себя и вводят код. Кого не будет — займут боты.</p>
+      <div class="act-row"><span class="mute">Мест за столом:</span><span class="seg" role="group" aria-label="Число мест">${[2,3,4].map(k=>`<button data-seats="${k}" aria-pressed="${lobbySeats===k}">${k}</button>`).join("")}</span></div>
+      <div class="act-row"><button class="go" id="bCreate" ${peerOk()?"":"disabled"}>Создать стол</button></div>
+    </div>
+    <div class="box"><h4>Сесть за стол по коду</h4>
+      <div class="act-row"><label class="mute" for="joinCode">Код стола</label><input id="joinCode" maxlength="4" autocomplete="off" value="${esc(pre)}" style="width:90px;font:700 16px var(--f-mono);letter-spacing:.12em;text-transform:uppercase;border:1.5px solid var(--ink);border-radius:8px;padding:6px 8px;background:#fff;color:var(--ink)"><button class="go" id="bJoinCode" ${peerOk()?"":"disabled"}>Сесть за стол</button></div>
+    </div>
+    <div class="box"><h4>Одному</h4><p>Вы против трёх ботов на этом устройстве.</p><div class="act-row"><button id="bSolo">Играть с ботами</button></div></div>
+    ${lobbyErr?`<p style="color:var(--event)">${esc(lobbyErr)}</p>`:""}
+  </div>`;
+  A.querySelectorAll("[data-seats]").forEach(b=>b.onclick=()=>{ lobbySeats=+b.dataset.seats; paint(); });
+  $("bCreate").onclick=createTable;
+  $("bJoinCode").onclick=()=>{ const c=String($("joinCode").value||"").trim().toUpperCase();
+    if(!/^[A-Z]{4}$/.test(c)){ lobbyErr="Код стола — четыре латинские буквы, например QPQS."; paint(); return; }
+    joinTable(c); };
+  $("bSolo").onclick=startSolo;
+  $("nick").oninput=e=>{ myNick=e.target.value.trim().slice(0,20); lsSet("koll_nick",myNick); };
+}
+
+function renderAction(){
+  const A=$("act");
+  if(MODE==="lobby") return renderLobby(A);
+  if(G&&G.status==="lobby") return renderWaitRoom(A);
+  if(MODE==="guest"&&!G){ A.className="act-panel wait"; A.innerHTML=`<h3>Стол ${esc(CODE||"")}</h3><p>${netState==="lost"?"Нет связи со столом.":"Подключаюсь к столу…"}</p><div class="act-row"><button id="bRe">Переподключиться</button><button id="bBack">Назад</button></div>${flashMsg?`<p style="color:var(--event)">${esc(flashMsg)}</p>`:""}`; $("bRe").onclick=reconnect; $("bBack").onclick=toLobby; return; }
+  if(!G) return;
+  const me=G.ps[MY];
+  if(G.over){
+    const rows=[...G.ps].sort((a,b)=>b.cash-a.cash).map(p=>`<div class="row ${p.i===G.winner?"w":""}"><span>${PL[p.i].agency} · ${esc(personOf(p.i))}</span><span>${f1(p.cash)} млн</span></div>`).join("");
+    A.className="act-panel";
+    A.innerHTML=`<h3>${G.winner===MY?"Вы победили!":`Победил ${PL[G.winner].agency}`}</h3><p>${G.bank?`Банк выкуплен в ${G.rnd}-м раунде за ${f1(G.bank.price)} млн.`:"Партия дошла до конца 10-го раунда."}</p><div class="final">${rows}</div><div class="act-row">${MODE==="solo"?`<button class="go" id="again">Сыграть ещё</button>`:""}<button id="toLobby">В лобби</button></div>`;
+    if($("again")) $("again").onclick=startSolo;
+    $("toLobby").onclick=toLobby;
+    return;
+  }
+  const P=G.pending;
+  if(!P||P.seat!==MY||submitted===P.token){
+    A.className="act-panel wait";
+    const whoWait=P?PL[P.seat].agency:(G.actor!==null?PL[G.actor].agency:null);
+    const remote=MODE==="host"&&P&&P.seat!==MY;
+    const head=G.auc?`<h3>Торги · ${G.ev==="blind"?"лот рубашкой вверх":`${TN[G.lots[G.auc.lot].lot[0]]} ${G.lots[G.auc.lot].lot[1]} млн`}</h3>${aucBoard()}`:`<h3>${["Событие","Торги","Сбор","Расходы"][G.phase]}</h3>`;
+    A.innerHTML=`${head}<p>${submitted&&P&&submitted===P.token?"Ход отправлен, ждём стол…":whoWait?`Ходит ${whoWait}${P&&G.seats[P.seat].kind==="human"&&P.seat!==MY?` (${esc(personOf(P.seat))})`:""}…`:"Ждём соперников…"}</p>
+      ${MODE==="guest"&&netState==="lost"?`<div class="act-row"><button id="bRe2">Переподключиться</button></div>`:""}
+      ${remote?`<div class="act-row"><button id="bSkip">Сходить за товарища автоматически</button><span class="mute">если он отошёл: пас в торгах, лучший расклад на сборе</span></div>`:""}
+      ${flashMsg?`<p style="color:var(--event)">${esc(flashMsg)}</p>`:""}`;
+    if($("bRe2")) $("bRe2").onclick=reconnect;
+    if($("bSkip")) $("bSkip").onclick=()=>{ const Q=G.pending; if(Q) resolvePending(defaultAnswer(Q)); };
+    return;
+  }
+  A.className="act-panel";
+  const k=P.kind, D=P.data;
+  if(k==="bid"||k==="sealed"){
+    const L=G.lots[k==="bid"?G.auc.lot:D.lot], [t,nom,sp,bl]=L.lot, blind=G.ev==="blind";
+    const title=blind?"Лот рубашкой вверх":`${TN[t]} ${nom} млн`, kk=Math.min(4,11-G.rnd);
+    const ev=blind?"":`<div class="hint">В среднем с вашими отделами принесёт <b>≈${f1(expValue(t,nom))} млн</b> чистыми за ${kk} сбор${kk>1?"а":""}. Лучшая карта в руке сейчас: <b>${Math.max(0,...me.hand.map(c=>pct(c,t,G.ev,me.dept)))}%</b>. Свободных мест: ${slots(me)-me.ports.length}.</div>`;
+    if(k==="sealed"){
+      A.innerHTML=`<h3>Тайная ставка · ${title}</h3><p>Все пишут ставку втайне — побеждает наибольшая и платит свою. Минимум <b>${f1(D.start)} млн</b>. Наличные: <b>${f1(me.cash)} млн</b>.</p>${ev}
+        <div class="act-row">${stepper(Math.min(me.cash,Math.max(D.start,r1(sp*2))))}<button class="go" id="bSealed">Сделать ставку</button><button id="bPass">Пас</button></div>`;
+      wireStepper(A,0,me.cash);
+      $("bSealed").onclick=()=>{ const v=Math.min(me.cash,readBid()); answer(v>=D.start?{v}:null); };
+      $("bPass").onclick=()=>answer(null);
+      return;
+    }
+    const need=D.need, Au=G.auc;
+    A.innerHTML=`<h3>Торги · ${title}</h3>${aucBoard()}
+      <p>${Au.leader===null?`Пока никто не ставил. Старт — <b>${f1(Au.start)} млн</b>.`:`Лидирует ${nm(Au.leader)} со ставкой <b>${f1(Au.price)} млн</b>.`} Ваш ход: перебейте или выйдите из торгов. Наличные: <b>${f1(me.cash)} млн</b>.</p>${ev}
+      <div class="act-row"><button class="go" id="bNeed">Ставка ${f1(need)}</button><button id="bP5" ${me.cash<need+0.4?"disabled":""}>${f1(r1(need+0.4))}</button><button id="bP1" ${me.cash<need+0.9?"disabled":""}>${f1(r1(need+0.9))}</button>${!blind?`<button class="bl" id="bBlitz" ${me.cash<bl?"disabled":""}>Блиц ${f1(bl)}</button>`:""}<button id="bPass">Пас</button></div>
+      <div class="act-row" style="font-size:12px;color:var(--ink-2)">Автоставка до ${stepper(Math.min(me.cash,r1(need+2)))}<button id="bAuto">Торговаться до потолка</button></div>`;
+    wireStepper(A,0,me.cash);
+    $("bNeed").onclick=()=>answer({bid:need});
+    $("bP5").onclick=()=>answer({bid:r1(need+0.4)});
+    $("bP1").onclick=()=>answer({bid:r1(need+0.9)});
+    if($("bBlitz")) $("bBlitz").onclick=()=>answer({blitz:true});
+    $("bPass").onclick=()=>answer({pass:true});
+    $("bAuto").onclick=()=>answer({auto:Math.min(me.cash,readBid())});
+    return;
+  }
+  if(k==="bank"){
+    const others=D.cands.filter(i=>i!==MY);
+    A.innerHTML=`<h3>Выкупить Банк?</h3><p>У вас <b>${f1(me.cash)} млн</b>. Выкуп Банка — мгновенная победа.${others.length?` Претендуют также: ${others.map(i=>`${PL[i].agency} (${f1(G.ps[i].cash)} млн)`).join(", ")} — торги от 60, ставка не выше своих наличных.`:""}</p>
+      <div class="act-row">${others.length?stepper(me.cash):""}<button class="go" id="bBank">${others.length?"Торговаться":"Выкупить за 60 млн"}</button><button id="bNo">Не сейчас</button></div>`;
+    if(others.length) wireStepper(A,60,me.cash);
+    $("bBank").onclick=()=>answer(others.length?Math.max(60,Math.min(me.cash,readBid())):60);
+    $("bNo").onclick=()=>answer(null);
+    return;
+  }
+  if(k==="collect"){
+    const fe=fee(), needN=Math.min(me.ports.length,me.hand.length), have=Object.keys(CA.map).length;
+    let tot=0; me.ports.forEach((pt,j)=>{ const hk=CA.map[j]; tot+= hk!==undefined? pct(me.hand[hk],pt.t,G.ev,me.dept)*pt.nom/100 : meanPct(pt.t,me.dept)*pt.nom/100*(G.ev==="volna"&&pt.t==="O"?0:1); });
+    A.innerHTML=`<h3>Ваш сбор</h3><p>Нажмите карту в руке, потом портфель на планшете — карта ляжет под него. Над портфелями видно, сколько принесёт выбранная карта. Карты из руки нужно разыграть, пока они есть; ${me.ports.length>me.hand.length?"портфель, которому не хватило карты, получит верхнюю карту колоды вслепую. ":""}Плата — <b>${f1(fe)} млн</b> за каждую карту. Разложено: <b>${have} из ${needN}</b>.</p>
+      <div class="hint">Ожидаемо: <b>+${f1(tot)}</b> − ${f1(fe*me.ports.length)} за карты = <b>${f1(tot-fe*me.ports.length)} млн</b>.</div>
+      <div class="act-row"><button id="bAutoC">Лучший расклад</button><button id="bClear">Сбросить</button><button class="go" id="bCollect" ${have<needN?"disabled":""}>Собрать</button></div>`;
+    $("bAutoC").onclick=()=>{ const a=bestAssign(me,G.ev); CA.map={}; a.forEach((h,j)=>{ if(h>=0) CA.map[j]=h; }); CA.sel=null; paint(); };
+    $("bClear").onclick=()=>{ CA={sel:null,map:{}}; paint(); };
+    $("bCollect").onclick=()=>{ const a=me.ports.map((_,j)=>CA.map[j]!==undefined?CA.map[j]:-1); CA={sel:null,map:{}}; answer(a); };
+  }
+}
+
+function renderWaitRoom(A){
+  A.className="act-panel";
+  const host=MODE==="host";
+  const joined=G.seats.filter(s=>s.kind==="human"&&s.uid).length;
+  const link=inviteLink(CODE);
+  A.innerHTML=`<h3>Стол <span class="code">${esc(CODE||"")}</span></h3>
+    ${host?`<p>${netState==="ready"?`Стол открыт. Скажите товарищам код <b>${esc(CODE)}</b>${link?" или отправьте ссылку-приглашение":""}. Держите эту страницу открытой всю партию.`:"Открываю стол…"}</p>`
+      :`<p>Вы за столом. Ждём, когда создатель начнёт партию…</p>`}
+    <div class="final">${G.seats.map((s,i)=>`<div class="row"><span>${PL[i].agency}</span><span>${s.kind==="bot"?"бот":s.uid?(s.uid===uid?"вы":esc(s.name||"игрок")):"свободно — займёт бот"}</span></div>`).join("")}</div>
+    ${host?`<div class="act-row">${link?`<button id="bCopy">Скопировать приглашение</button>`:""}<button class="go" id="bStart" ${netState==="ready"?"":"disabled"}>Начать партию${joined<G.seats.length?" (пустые места — боты)":""}</button><button id="bCancel">Закрыть стол</button></div>${link?`<p class="mute" style="user-select:all">${esc(link)}</p>`:""}`:""}
+    ${flashMsg?`<p style="color:var(--event)">${esc(flashMsg)}</p>`:""}`;
+  if(host){
+    $("bStart").onclick=startHosted; $("bCancel").onclick=toLobby;
+    if($("bCopy")) $("bCopy").onclick=async()=>{ try{ await navigator.clipboard.writeText(link); flash("Ссылка скопирована."); }catch(e){ flash("Скопируйте ссылку под кнопками вручную."); } };
+  }
+}
+
+
+function renderLog(){
+  const el=$("log");
+  if(!G){ el.innerHTML=`<div class="l">Партия ещё не началась.</div>`; $("ticker").innerHTML=""; return; }
+  el.innerHTML=(G.log||[]).map(x=>x.html.startsWith('<span class="r"')?x.html:`<div class="l">${x.html}</div>`).join("");
+  el.scrollTop=el.scrollHeight;
+  const last=(G.log||[]).filter(x=>!x.html.startsWith('<span class="r"')).slice(-1)[0];
+  $("ticker").innerHTML=last?`<b>Р${G.rnd||1}</b>${last.html}`:"";
+}
+function renderChart(){
+  if(!G||!G.ps){ $("chart").innerHTML=""; $("legend").innerHTML=""; return; }
+  const W=560,H=200,pl=34,pr=10,pt=10,pb=24;
+  const maxY=Math.max(70,...G.hist.flat(),...G.ps.map(p=>p.cash))+5;
+  const X=i=>pl+(W-pl-pr)*i/10, Y=v=>pt+(H-pt-pb)*(1-Math.max(0,v)/maxY);
+  let g="";
+  for(let v=0;v<=maxY;v+=10) g+=`<line x1="${pl}" x2="${W-pr}" y1="${Y(v)}" y2="${Y(v)}" stroke="rgba(255,255,255,.07)"/><text x="${pl-6}" y="${Y(v)+4}" text-anchor="end" font-size="10" fill="#a9b3aa" font-family="IBM Plex Mono">${v}</text>`;
+  g+=`<line x1="${pl}" x2="${W-pr}" y1="${Y(60)}" y2="${Y(60)}" stroke="#e07a6a" stroke-dasharray="4 3"/><text x="${W-pr}" y="${Y(60)-4}" text-anchor="end" font-size="10" fill="#e07a6a">Банк 60</text>`;
+  for(let k=0;k<=10;k++) g+=`<text x="${X(k)}" y="${H-8}" font-size="10" fill="#a9b3aa" text-anchor="middle" font-family="IBM Plex Mono">${k}</text>`;
+  G.ps.forEach((pp,p)=>{
+    const pts=G.hist.map((h,k)=>`${X(k)},${Y(h[p])}`); pts.push(`${X(G.hist.length-1+(G.rnd>=G.hist.length?0.5:0))},${Y(pp.cash)}`);
+    g+=`<polyline points="${pts.join(" ")}" fill="none" stroke="${PL[p].hex}" stroke-width="${p===MY?3:2}" stroke-linejoin="round"/>`;
+  });
+  $("chart").innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Наличные по раундам">${g}</svg>`;
+  $("legend").innerHTML=G.ps.map((pp,p)=>`<span><i style="background:${PL[p].hex}"></i>${PL[p].agency} ${f1(pp.cash)}</span>`).join("");
+}
+function renderRounds(){ $("rounds").innerHTML=G&&G.ps?Array.from({length:10},(_,k)=>`<span class="rchip ${k+1<G.rnd?"done":""} ${k+1===G.rnd?"on":""}" style="display:grid;place-items:center">${k+1}</span>`).join(""):""; }
+
+function paint(){
+  const playing=G&&G.ps;
+  document.querySelectorAll(".hostonly").forEach(e=>e.hidden=(MODE==="guest"));
+  $("bLobby").hidden=(MODE==="lobby");
+  renderField();
+  for(let i=0;i<4;i++) renderSeat(i);
+  renderAction(); renderRounds(); renderChart(); renderLog();
+  if(playing) prevCash=G.ps.map(p=>p.cash);
+  if(MODE==="host"&&G) broadcast();
+}
+
+/* my planshet & hand clicks during collection */
+$("table").addEventListener("click",ev=>{
+  if(!myTurn("collect")) return;
+  const h=ev.target.closest("[data-hand]"), s=ev.target.closest("[data-port]");
+  if(h){ const k=+h.dataset.hand; CA.sel=CA.sel===k?null:k; paint(); }
+  else if(s){ const j=+s.dataset.port;
+    if(CA.sel!==null){ for(const key of Object.keys(CA.map)) if(CA.map[key]===CA.sel) delete CA.map[key]; CA.map[j]=CA.sel; CA.sel=null; }
+    else delete CA.map[j];
+    paint(); }
+});
+$("table").addEventListener("keydown",ev=>{ if((ev.key==="Enter"||ev.key===" ")&&ev.target.matches("[data-hand],[data-port]")){ ev.preventDefault(); ev.target.click(); }});
+
+/* ================= lobby & modes ================= */
+function closeNet(){ try{ conns.forEach(c=>c.close()); }catch(e){} conns=[]; try{ hostConn&&hostConn.close(); }catch(e){} hostConn=null; try{ peer&&peer.destroy(); }catch(e){} peer=null; netState=""; }
+function resetLocal(){ runId++; closeNet(); Object.keys(waiters).forEach(k=>delete waiters[k]); submitted=null; CA={sel:null,map:{}}; prevCash=[15,15,15,15]; }
+function toLobby(){ resetLocal(); MODE="lobby"; G=null; CODE=null; MY=0; paint(); }
+function startSolo(){
+  resetLocal(); MODE="solo"; MY=0; CODE=null;
+  G=newState([{kind:"human",uid,name:myNick},{kind:"bot"},{kind:"bot"},{kind:"bot"}],Math.floor(Math.random()*1e9));
+  play().catch(e=>{ if(e.message!=="stale") console.error(e); });
+}
+function newCode(){ const L="ABCDEFGHJKLMNPRSTUVWXYZ"; let s=""; for(let i=0;i<4;i++) s+=L[Math.floor(Math.random()*L.length)]; return s; }
+function createTable(tries){
+  tries=tries||0; lobbyErr="";
+  resetLocal(); CODE=newCode(); MODE="host"; MY=0; netState="opening";
+  const seatsArr=[{kind:"human",uid,name:myNick}]; for(let k=1;k<lobbySeats;k++) seatsArr.push({kind:"human",uid:"",name:""});
+  G={status:"lobby",seats:seatsArr};
+  peer=new Peer(PREFIX+CODE);
+  peer.on("open",()=>{ netState="ready"; paint(); });
+  peer.on("error",e=>{ if(e&&e.type==="unavailable-id"&&tries<3) return createTable(tries+1);
+    if(e&&e.type==="peer-unavailable") return; // a guest vanished; not fatal for host
+    if(netState!=="ready"){ lobbyErr=netErr(e); toLobby(); } else flash(netErr(e)); });
+  peer.on("disconnected",()=>{ try{ peer.reconnect(); }catch(e){} });
+  peer.on("connection",c=>{
+    c.on("open",()=>{ conns.push(c); });
+    c.on("data",d=>onHostMsg(c,d));
+    c.on("close",()=>{ conns=conns.filter(x=>x!==c); if(c.seat!==undefined&&G&&G.status==="lobby"){ /* keep seat: they may reconnect */ } paint(); });
+  });
+  paint();
+}
+function onHostMsg(c,d){
+  if(!d||typeof d!=="object"||!G) return;
+  if(d.type==="join"){
+    const pid=String(d.pid||"").slice(0,40), name=String(d.name||"").slice(0,20);
+    let idx=G.seats.findIndex(s=>s.kind==="human"&&s.uid===pid);
+    if(idx<0&&G.status==="lobby") idx=G.seats.findIndex(s=>s.kind==="human"&&!s.uid);
+    if(idx<0||idx===0&&pid!==uid){ try{ c.send({type:"full"}); }catch(e){} return; }
+    G.seats[idx].uid=pid; G.seats[idx].name=name||G.seats[idx].name; c.seat=idx;
+    if(G.ps) log(`${esc(name||"Игрок")} ${G.status==="lobby"?"сел":"вернулся"} за стол как ${nm(idx)}.`);
+    paint(); broadcast(); return;
+  }
+  if(d.type==="answer"){
+    const P=G.pending;
+    if(P&&c.seat===P.seat&&d.token===P.token) resolvePending(d.v);
+  }
+}
+function startHosted(){
+  const seatsArr=G.seats.map(s=>s.kind==="human"&&s.uid?{kind:"human",uid:s.uid,name:s.name||""}:{kind:"bot",uid:"",name:""});
+  G=newState(seatsArr,Math.floor(Math.random()*1e9)); G.status="play";
+  play().catch(e=>{ if(e.message!=="stale") console.error(e); });
+}
+function joinTable(code){
+  lobbyErr=""; resetLocal(); MODE="guest"; CODE=code; G=null; netState="connecting"; paint();
+  peer=new Peer();
+  peer.on("open",()=>connectHost());
+  peer.on("error",e=>{ const m=netErr(e); if(!G||!G.seats){ lobbyErr=m; toLobby(); } else { netState="lost"; flash(m); } });
+  peer.on("disconnected",()=>{ try{ peer.reconnect(); }catch(e){} });
+}
+function connectHost(){
+  hostConn=peer.connect(PREFIX+CODE,{reliable:true});
+  hostConn.on("open",()=>{ netState="ok"; hostConn.send({type:"join",pid:uid,name:myNick}); paint(); });
+  hostConn.on("data",d=>{
+    if(!d||typeof d!=="object") return;
+    if(d.type==="full"){ lobbyErr="За этим столом нет свободных мест, а партия уже идёт."; toLobby(); return; }
+    if(d.type==="state"&&d.state){
+      G=d.state; const idx=(G.seats||[]).findIndex(s=>s.uid===uid); MY=idx>=0?idx:0;
+      const tok=G.pending&&G.pending.token; if(tok!==lastTok){ lastTok=tok; CA={sel:null,map:{}}; }
+      if(submitted&&(!G.pending||G.pending.token!==submitted)) submitted=null;
+      paint();
+    }
+  });
+  hostConn.on("close",()=>{ netState="lost"; flash("Связь с создателем стола прервалась. Если его страница открыта — нажмите «Переподключиться»."); });
+}
+function reconnect(){ if(MODE!=="guest"||!peer) return; netState="connecting"; paint(); try{ if(peer.disconnected) peer.reconnect(); }catch(e){} connectHost(); }
+let leaveArm=0;
+$("bLobby").onclick=()=>{
+  if(MODE==="host"&&CODE&&G&&!G.over){
+    if(Date.now()-leaveArm>4000){ leaveArm=Date.now(); $("bLobby").textContent="Нажмите ещё раз — стол закроется"; setTimeout(()=>{ $("bLobby").textContent="К списку столов"; },4000); return; }
+  }
+  toLobby(); };
+window.addEventListener("beforeunload",e=>{ if(MODE==="host"&&G&&G.ps&&!G.over){ e.preventDefault(); e.returnValue=""; } });
+
+/* ================= boot ================= */
+paint();
+</script>
+
+</body></html>
